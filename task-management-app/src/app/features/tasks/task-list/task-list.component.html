@@ -1,0 +1,91 @@
+<div class="task-list-container">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <h2>Tasks <span class="count">{{ tasks.length }}</span></h2>
+    </div>
+    <button class="btn-add" (click)="onNew()">+ New Task</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input
+      type="text"
+      class="filter-input"
+      placeholder="Search tasks..."
+      [(ngModel)]="filter.searchTerm"
+      (ngModelChange)="onFilterChange()"
+    />
+
+    <select class="filter-select" [(ngModel)]="filter.isCompleted" (ngModelChange)="onFilterChange()">
+      <option [ngValue]="null">All Status</option>
+      <option [ngValue]="false">Active</option>
+      <option [ngValue]="true">Completed</option>
+    </select>
+
+    <select class="filter-select" [(ngModel)]="filter.priority" (ngModelChange)="onFilterChange()">
+      <option value="">All Priorities</option>
+      <option *ngFor="let p of priorities" [value]="p">{{ p }}</option>
+    </select>
+
+    <select class="filter-select" [(ngModel)]="filter.sortBy" (ngModelChange)="onFilterChange()">
+      <option *ngFor="let s of sortOptions" [value]="s.value">{{ s.label }}</option>
+    </select>
+
+    <button class="btn-sort-dir" (click)="onSortChange(filter.sortBy || 'createdAt')" title="Toggle sort direction">
+      {{ filter.sortDescending ? '↓' : '↑' }}
+    </button>
+
+    <button class="btn-clear" (click)="clearFilters()">Clear</button>
+  </div>
+
+  <!-- Loading -->
+  <div class="state-loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Loading tasks...</span>
+  </div>
+
+  <!-- Error -->
+  <div class="error-message" *ngIf="errorMessage && !loading">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Empty -->
+  <div class="state-empty" *ngIf="!loading && !errorMessage && tasks.length === 0">
+    <span class="empty-icon">📋</span>
+    <p>No tasks found.</p>
+    <button class="btn-add" (click)="onNew()">Create your first task</button>
+  </div>
+
+  <!-- Task Items -->
+  <ul class="task-items" *ngIf="!loading && tasks.length > 0">
+    <li
+      *ngFor="let task of tasks; trackBy: trackById"
+      class="task-item"
+      [class.completed]="task.isCompleted"
+    >
+      <label class="checkbox-wrapper">
+        <input
+          type="checkbox"
+          [checked]="task.isCompleted"
+          (change)="toggleComplete(task)"
+        />
+        <span class="checkmark"></span>
+      </label>
+
+      <div class="task-body" (click)="onEdit(task)">
+        <div class="task-title">{{ task.title }}</div>
+        <div class="task-meta">
+          <span class="badge" [ngClass]="getPriorityClass(task.priority)">{{ task.priority }}</span>
+          <span class="due-date" *ngIf="task.dueDate">Due: {{ task.dueDate | date:'mediumDate' }}</span>
+          <span class="description-preview" *ngIf="task.description">{{ task.description }}</span>
+        </div>
+      </div>
+
+      <div class="task-actions">
+        <button class="btn-icon btn-edit" (click)="onEdit(task)" title="Edit">✏️</button>
+        <button class="btn-icon btn-delete" (click)="onDelete(task)" title="Delete">🗑️</button>
+      </div>
+    </li>
+  </ul>
+</div>

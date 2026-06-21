@@ -1,0 +1,30 @@
+<div class="layout-container">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-icon">✓</span>
+      <h1>Task Manager</h1>
+    </div>
+    <div class="topbar-actions">
+      <span class="username">{{ authService.getCurrentUsername() }}</span>
+      <button class="btn-logout" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <div class="panel panel-list">
+      <app-task-list
+        [refreshTrigger]="refreshTrigger"
+        (editTask)="onEditTask($event)"
+        (newTask)="onNewTask()"
+      ></app-task-list>
+    </div>
+
+    <div class="panel panel-form">
+      <app-task-form
+        [task]="selectedTask"
+        (saved)="onTaskSaved()"
+        (cancelled)="onTaskCancelled()"
+      ></app-task-form>
+    </div>
+  </div>
+</div>
